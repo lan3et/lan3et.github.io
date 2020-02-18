@@ -139,6 +139,217 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-渗透测试/文件上传姿势总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/18/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%A7%BF%E5%8A%BF%E6%80%BB%E7%BB%93/">渗透测试/文件上传姿势总结</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/18/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%A7%BF%E5%8A%BF%E6%80%BB%E7%BB%93/" class="archive-article-date">
+  	<time datetime="2020-02-18T05:28:45.745Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h5 id="必备条件"><a href="#必备条件" class="headerlink" title="必备条件"></a>必备条件</h5><ul>
+<li><p>存在上传功能</p>
+</li>
+<li><p>上传文件被服务器保存且不修改</p>
+</li>
+<li><p>上传文件可被容器（tomcat，php-fpm）解析执行</p>
+</li>
+<li><p>攻击者可得知上传到服务器的文件路径</p>
+</li>
+<li><p>用户有权限通过Web访问目标文件</p>
+<h5 id="上传点"><a href="#上传点" class="headerlink" title="上传点"></a>上传点</h5></li>
+<li><p>编辑器</p>
+</li>
+<li><p>图片上传</p>
+</li>
+<li><p>已知cms上传漏洞</p>
+</li>
+<li><p>文章发布</p>
+</li>
+<li><p>文件管理</p>
+</li>
+<li><p>上传api接口</p>
+</li>
+<li><p>PUT上传漏洞</p>
+</li>
+<li><p>Tomcat后台上传war包</p>
+</li>
+<li><p>Weblogic文件上传漏洞（CVE-2018-2894：/ws_utc/begin.do和/ws_utc/config.do两个页面未授权访问且可任意上传）</p>
+<h5 id="上传函数"><a href="#上传函数" class="headerlink" title="上传函数"></a>上传函数</h5></li>
+<li><p>ASP(X)</p>
+<ul>
+<li>FSO对象GetFile方法、MoveFile方法、CopyFile方法、DeleteFile方法。用于移动或拷贝文件</li>
+</ul>
+</li>
+<li><p>PHP</p>
+<ul>
+<li>move_uploaded_file()方法，从临时路径拷贝文件</li>
+<li>imagecopy()方法，用于拷贝图像或图像的一部分</li>
+<li>imagecopyresized()方法，用于拷贝部分图像并调整大小</li>
+<li>imagecopyresampled()方法，同“imagecopyresized”，更精细</li>
+</ul>
+</li>
+<li><p>JSP</p>
+<ul>
+<li>File类中的renameto()方法，用于给文件重命名</li>
+<li>File类中的getRealPath()方法，用于获取文件所在绝对路径<h5 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h5></li>
+</ul>
+</li>
+<li><p>前端校验</p>
+<ul>
+<li>抓包改包</li>
+<li>修改/禁用js</li>
+</ul>
+</li>
+<li><p>后端绕过</p>
+<ul>
+<li>修改content-type</li>
+<li>修改后缀<ul>
+<li>大小写绕过</li>
+<li>寻找可解析但不在黑名单的后缀名</li>
+</ul>
+</li>
+<li>修改文件头</li>
+</ul>
+</li>
+<li><p>畸形后缀名 </p>
+<ul>
+<li><p>空字节阶段（test.php%00.jpg，c代码特性，适用于asp，jsp，php&lt;5.3.4）</p>
+<ul>
+<li>路径拼接直接使用未过滤的完整文件名</li>
+<li>文件路径直接可控</li>
+</ul>
+</li>
+<li><p>解析漏洞</p>
+<ul>
+<li><p>（IIS 6.0）上传/test.asp/test.jpg，直接访问，IIS6.0本身的缺陷，目录名中包含asp，后面的文件也会直接丢给容器。</p>
+</li>
+<li><p>（IIS 6.0）上传test.asp;.jpg，直接访问，IIS6.0本身的缺陷，文件名中包含“.asp;”便判定为是asp文件不继续读文件名，直接丢给了容器</p>
+</li>
+<li><p>（IIS 7/7.5）上传test.jpg，访问test.jpg/xx.php，服务器将“.php“后缀的路径直接丢给了解释器，PHP-CGI修理路径去掉后面并不存在的php文件后并没有丢弃本次请求，而是继续正常解析，造成非php后缀的文件也被容器当作php脚本解析了。</p>
+</li>
+<li><p>Nginx</p>
+<ul>
+<li>同 IIS 7/7.5</li>
+<li>上传test.jpg，访问test.jpg%00.php</li>
+</ul>
+</li>
+<li><p>Apache</p>
+<ul>
+<li>上传shell.php.xxx，直接访问，shell.php.xxx从右向左识别后缀，读到认识的为止<ul>
+<li>垃圾数据填充（可能只检测前1M数据包）</li>
+<li>设置多个filename字段 </li>
+<li>更换filename字段位置</li>
+<li>替换为GET请求</li>
+<li>删除ContenType字段</li>
+<li>删除Conten-Type 中“C”后面的字符，再加上脚本后缀</li>
+<li>删除Content-Disposition字段中的空格</li>
+<li>修改Content-Disposition字段值的大小写</li>
+<li>Boundary后面加空格或其他正常字符</li>
+<li>Boundary边界修改为不一致（边界不一致，waf认为该数据无意义）</li>
+<li>在文件名处换行</li>
+<li>使用多个Content-Disposition（IIS取第一个，WAF可能取最后一个）</li>
+<li>后缀名+‘.’（Windows存储时会删除’.’’）</li>
+<li>超长后缀绕过后端重命名</li>
+<li>文件结尾+‘\’</li>
+<li>NTFS ADS特性（Win）</li>
+<li>多个文件流使用同一文件名</li>
+<li>一个文件名可以包含一个主文件流和多个非主文件流。其中，主文件流可以以文件名直接访问，而其他文件流需要以“文件名:文件流名:流类型”进行访问，流文件名可省略默认为主流文件。例如“Test.php::$DATA”可以直接生成Webshell“Test.php”绕过黑名单     </li>
+<li>图片空白区加代码绕过单次渲染</li>
+<li>二次渲染绕过</li>
+<li>GIF：如果能拿到渲染后的图像文件，对比没有修改过的区域添加恶意代码，就可以上传成功。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>PNG：将恶意代码写入PLTE数据块（调色板辅助数据块，因此仅针对彩色PNG有效）并重新计算CRC校验值。</p>
+</li>
+<li><p>PNG：将恶意代码插入IDAT数据块（通用）。</p>
+</li>
+<li><p>JPG：利用php函数imagecopyresized() 或 imagecopyresampled()的缺陷。</p>
+</li>
+</ul>
+</li>
+<li><p>竞争上传</p>
+</li>
+<li><p>文件包含（jsp文件包含需具备执行权限，鸡肋）</p>
+<ul>
+<li>远程文件包含<ul>
+<li>All_url_fopen=On（默认开启）</li>
+<li>Allow_url_include=On（默认关闭）</li>
+<li>被包含的文件遍历时没有目录限制</li>
+</ul>
+</li>
+<li>本地文件包含<h5 id="获取上传路径"><a href="#获取上传路径" class="headerlink" title="获取上传路径"></a>获取上传路径</h5></li>
+</ul>
+</li>
+<li><p>上传后返回包中</p>
+</li>
+<li><p>前端查看</p>
+</li>
+<li><p>目录遍历</p>
+</li>
+<li><p>报错</p>
+</li>
+<li><p>目录扫描</p>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/18/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%A7%BF%E5%8A%BF%E6%80%BB%E7%BB%93/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-内网渗透/内网渗透学习笔记-基础及信息收集" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
